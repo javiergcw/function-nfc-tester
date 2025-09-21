@@ -47,7 +47,8 @@ export default function Home() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('https://sandbox.akua.la/v1/pos/providers/cloudcommerce/login', {
+      // Usar el proxy interno de Next.js para evitar problemas de CORS
+      const response = await fetch('/api/akua/login', {
         method: 'POST',
         headers: {
           'api-key': 'dach5jaeb2JeKoh8Eesai3aid0Ji3Yuhoo4aib5pieyeequ4eiNeememi8aiZeel',
@@ -70,11 +71,13 @@ export default function Home() {
           merchantCategoryCode: data.terminal_config.merchant_category_code
         }));
       } else {
-        alert('Error en el login');
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        alert(`Error en el login: ${response.status} - ${response.statusText}`);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Error de conexión');
+      alert('Error de conexión. Asegúrate de que el servidor esté ejecutándose.');
     }
   };
 
