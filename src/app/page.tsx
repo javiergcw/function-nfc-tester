@@ -87,14 +87,31 @@ export default function Home() {
     const intent = `cloud_payment://cloudcommerce/json:${base64Data}`;
     setNfcIntent(intent);
     
-    // Intentar abrir el intent directamente
+    // Crear un enlace temporal para ejecutar el intent
+    const link = document.createElement('a');
+    link.href = intent;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    
+    // Intentar abrir el intent
     try {
-      window.location.href = intent;
+      link.click();
+      
+      // Si no se abre la app en 2 segundos, mostrar mensaje
+      setTimeout(() => {
+        if (document.hasFocus()) {
+          alert('No se pudo abrir la aplicación NFC. Asegúrate de que esté instalada.');
+          navigator.clipboard.writeText(intent);
+        }
+      }, 2000);
+      
     } catch (error) {
       console.error('Error al abrir el intent:', error);
-      // Si no se puede abrir, mostrar el intent para copiarlo manualmente
       alert('No se pudo abrir el intent automáticamente. Se ha copiado al portapapeles.');
       navigator.clipboard.writeText(intent);
+    } finally {
+      // Limpiar el enlace temporal
+      document.body.removeChild(link);
     }
   };
 
@@ -111,7 +128,7 @@ export default function Home() {
             NFC Payment Tester
           </h1>
           <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
-            v1.0
+            v2.0
           </span>
         </div>
         
