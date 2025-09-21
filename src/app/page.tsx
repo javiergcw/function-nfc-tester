@@ -152,7 +152,7 @@ export default function Home() {
             NFC Payment Tester
           </h1>
           <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
-            v4.0
+            v5.0
           </span>
         </div>
         
