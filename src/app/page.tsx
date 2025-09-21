@@ -144,18 +144,132 @@ export default function Home() {
     alert('Intent copiado al portapapeles');
   };
 
+  const testWhatsAppIntent = () => {
+    const whatsappIntent = 'https://wa.me/1234567890?text=Hola%20desde%20NFC%20Payment%20Tester';
+    
+    try {
+      // Intentar abrir WhatsApp usando deep linking
+      window.location.href = whatsappIntent;
+      
+      // Si no funciona, mostrar mensaje
+      setTimeout(() => {
+        alert('Si no se abrió WhatsApp, copia este enlace: ' + whatsappIntent);
+        navigator.clipboard.writeText(whatsappIntent);
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Error al abrir WhatsApp:', error);
+      alert('No se pudo abrir WhatsApp. Se ha copiado el enlace al portapapeles.');
+      navigator.clipboard.writeText(whatsappIntent);
+    }
+  };
+
+  const testDeepLink = () => {
+    const testIntent = 'cloud_payment://test';
+    
+    // Detectar si estamos en un navegador móvil
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // En móviles, intentar abrir directamente
+      try {
+        window.location.href = testIntent;
+        
+        // Si no se abre en 3 segundos, mostrar mensaje
+        setTimeout(() => {
+          alert('El deep link no se pudo abrir. Esto significa que la aplicación NFC no está instalada o no está registrada para manejar el esquema "cloud_payment://"');
+          navigator.clipboard.writeText(testIntent);
+        }, 3000);
+        
+      } catch (error) {
+        console.error('Error al probar deep link:', error);
+        alert('Error al probar el deep link. Se ha copiado al portapapeles.');
+        navigator.clipboard.writeText(testIntent);
+      }
+    } else {
+      // En desktop, mostrar mensaje explicativo
+      alert('Los deep links personalizados no funcionan en navegadores de escritorio. Este test solo funciona en dispositivos móviles con la aplicación NFC instalada.');
+      navigator.clipboard.writeText(testIntent);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            NFC Payment Tester
+            Cloud Commerce NFC Tester
           </h1>
           <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
             v5.0
           </span>
+          <p className="text-sm text-gray-600 mt-2">
+            Mastercard Cloud Commerce Deep Linking Integration
+          </p>
         </div>
         
+        {/* Sección de Información de Cloud Commerce */}
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-6">
+          <h2 className="text-xl font-semibold mb-4 text-purple-700">📱 Cloud Commerce App Requirements</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 bg-white rounded-lg border border-purple-200">
+              <h3 className="font-semibold text-purple-700 mb-2">🔐 Permisos Requeridos</h3>
+              <ul className="text-sm text-purple-600 space-y-1">
+                <li>• <strong>Bluetooth:</strong> Para dispositivos periféricos</li>
+                <li>• <strong>USB:</strong> Para impresoras y accesorios</li>
+                <li>• <strong>Micrófono:</strong> Para seguridad y protección</li>
+                <li>• <strong>Ubicación:</strong> Para geo-restricciones</li>
+              </ul>
+            </div>
+            <div className="p-4 bg-white rounded-lg border border-purple-200">
+              <h3 className="font-semibold text-purple-700 mb-2">🔗 Deep Link Scheme</h3>
+              <ul className="text-sm text-purple-600 space-y-1">
+                <li>• <strong>Scheme:</strong> cloud_payment://</li>
+                <li>• <strong>Format:</strong> cloud_payment://cloudcommerce/json:&#123;base64&#125;</li>
+                <li>• <strong>App:</strong> Mastercard Cloud Commerce</li>
+                <li>• <strong>Platform:</strong> Mobile only</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Sección de Prueba de Intent */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-700">Prueba de Deep Links</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Prueba si los deep links funcionan correctamente en tu dispositivo:
+          </p>
+          <div className="flex gap-3 flex-wrap">
+            <button
+              onClick={testWhatsAppIntent}
+              className="bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600 transition-colors"
+            >
+              🚀 Probar WhatsApp
+            </button>
+            <button
+              onClick={testDeepLink}
+              className="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 transition-colors"
+            >
+              🔗 Probar Deep Link NFC
+            </button>
+          </div>
+          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+            <p className="text-sm text-yellow-800">
+              <strong>Nota:</strong> El deep link NFC solo funcionará si tienes la aplicación NFC instalada y registrada para manejar el esquema "cloud_payment://"
+            </p>
+          </div>
+          
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md">
+            <h3 className="text-sm font-semibold text-red-800 mb-2">⚠️ Si los deep links abren en el navegador:</h3>
+            <ul className="text-sm text-red-700 space-y-1">
+              <li>• La aplicación NFC no está instalada</li>
+              <li>• El esquema "cloud_payment://" no está registrado</li>
+              <li>• El navegador está interceptando la URL</li>
+              <li>• <strong>Solución:</strong> Instala la aplicación NFC y regístrala para manejar el esquema</li>
+            </ul>
+          </div>
+        </div>
+
         {/* Sección de Login */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4 text-gray-700">Login API</h2>
@@ -331,15 +445,53 @@ export default function Home() {
           </div>
         )}
 
+        {/* Alternativas cuando los deep links no funcionen */}
+        <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+          <h3 className="text-lg font-semibold text-green-800 mb-2">🔄 Alternativas cuando los deep links no funcionen</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 bg-white rounded-lg border border-green-200">
+              <h4 className="font-semibold text-green-700 mb-2">📱 Para móviles:</h4>
+              <ul className="text-sm text-green-600 space-y-1">
+                <li>• Instala <strong>Mastercard Cloud Commerce</strong> app</li>
+                <li>• Usa el QR code generado para escanear</li>
+                <li>• Copia el intent y pégalo en Cloud Commerce</li>
+                <li>• Verifica permisos de Bluetooth, USB, Mic, Ubicación</li>
+              </ul>
+            </div>
+            <div className="p-4 bg-white rounded-lg border border-green-200">
+              <h4 className="font-semibold text-green-700 mb-2">💻 Para desktop:</h4>
+              <ul className="text-sm text-green-600 space-y-1">
+                <li>• Los deep links no funcionan en desktop</li>
+                <li>• Usa el QR code para probar en móvil</li>
+                <li>• Copia el intent para usar en Cloud Commerce</li>
+                <li>• Prueba en un dispositivo móvil real</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <h4 className="font-semibold text-blue-700 mb-2">⚠️ Requisitos importantes:</h4>
+            <ul className="text-sm text-blue-600 space-y-1">
+              <li>• <strong>App requerida:</strong> Mastercard Cloud Commerce (no cualquier app NFC)</li>
+              <li>• <strong>Permisos:</strong> Bluetooth, USB, Micrófono, Ubicación</li>
+              <li>• <strong>Dispositivos:</strong> Solo móviles (Android/iOS)</li>
+              <li>• <strong>Registro:</strong> La app debe estar registrada para cloud_payment://</li>
+            </ul>
+          </div>
+        </div>
+
         {/* Información de Uso */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-blue-800 mb-2">Instrucciones de Uso</h3>
           <ol className="list-decimal list-inside text-blue-700 space-y-1">
+            <li><strong>Primero:</strong> Instala <strong>Mastercard Cloud Commerce</strong> app en tu móvil</li>
+            <li><strong>Segundo:</strong> Prueba "🚀 Probar WhatsApp" para verificar que los deep links funcionan</li>
+            <li><strong>Tercero:</strong> Prueba "🔗 Probar Deep Link NFC" para verificar el esquema cloud_payment://</li>
             <li>Completa los datos de login y haz clic en "Iniciar Sesión"</li>
             <li>Ingresa el monto y color deseado para el pago</li>
             <li>Haz clic en "Generar Intent" para crear el intent y QR code</li>
-            <li>Usa el botón "Ejecutar Pago NFC" para abrir la aplicación directamente</li>
-            <li>O usa el QR code generado para escanear con tu aplicación NFC</li>
+            <li>Usa el botón "Ejecutar Pago NFC" para abrir Cloud Commerce directamente</li>
+            <li>O usa el QR code generado para escanear con Cloud Commerce</li>
           </ol>
         </div>
       </div>
