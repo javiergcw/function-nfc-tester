@@ -87,37 +87,34 @@ export default function Home() {
     const intent = `cloud_payment://cloudcommerce/json:${base64Data}`;
     setNfcIntent(intent);
     
-    // Mostrar instrucciones para el usuario
-    const userAgent = navigator.userAgent.toLowerCase();
-    const isMobile = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
-    
-    if (isMobile) {
-      // En dispositivos móviles, mostrar instrucciones
-      alert(`Para ejecutar el pago NFC:\n\n1. Copia este intent: ${intent.substring(0, 50)}...\n2. Pégalo en tu aplicación NFC\n3. O usa el botón "Copiar" abajo`);
+    // Intentar abrir la aplicación directamente
+    try {
+      // Método 1: Usar window.location para forzar la navegación
+      window.location.href = intent;
+      
+      // Método 2: Si no funciona, usar window.open
+      setTimeout(() => {
+        try {
+          window.open(intent, '_self');
+        } catch (e) {
+          // Método 3: Crear iframe oculto
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          iframe.src = intent;
+          document.body.appendChild(iframe);
+          
+          setTimeout(() => {
+            if (iframe.parentNode) {
+              document.body.removeChild(iframe);
+            }
+          }, 1000);
+        }
+      }, 100);
+      
+    } catch (error) {
+      console.error('Error al abrir el intent:', error);
+      alert('No se pudo abrir la aplicación automáticamente. Se ha copiado el intent al portapapeles.');
       navigator.clipboard.writeText(intent);
-    } else {
-      // En desktop, intentar abrir directamente
-      try {
-        // Crear un enlace temporal y hacer click
-        const link = document.createElement('a');
-        link.href = intent;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Si no funciona, mostrar mensaje
-        setTimeout(() => {
-          alert('Si no se abrió la aplicación, copia el intent manualmente usando el botón "Copiar"');
-        }, 1000);
-        
-      } catch (error) {
-        console.error('Error al abrir el intent:', error);
-        alert('No se pudo abrir el intent automáticamente. Usa el botón "Copiar" para obtener el intent.');
-        navigator.clipboard.writeText(intent);
-      }
     }
   };
 
@@ -134,7 +131,7 @@ export default function Home() {
             NFC Payment Tester
           </h1>
           <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
-            v3.0
+            v4.0
           </span>
         </div>
         
